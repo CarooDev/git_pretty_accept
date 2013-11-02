@@ -4,3 +4,4 @@ html
 results.html
 .githooks
 .DS_Store
+.rubocop.yml
