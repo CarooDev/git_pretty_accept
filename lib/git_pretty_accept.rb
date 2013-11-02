@@ -1,3 +1,4 @@
+require 'git'
 require 'optparse'
 require 'methadone'
 
