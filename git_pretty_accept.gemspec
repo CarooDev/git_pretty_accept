@@ -25,4 +25,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency('rake', '~> 0.9.2')
   spec.add_dependency('methadone', '~> 1.3.1')
   spec.add_development_dependency('rspec')
+  spec.add_development_dependency('rspec-example_steps')
 end
