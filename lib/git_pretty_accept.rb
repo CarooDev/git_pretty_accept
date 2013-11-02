@@ -1,3 +1,6 @@
+require 'optparse'
+require 'methadone'
+
 require "git_pretty_accept/app"
 require "git_pretty_accept/version"
 
