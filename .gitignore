@@ -1,5 +1,6 @@
-.DS_Store
 Gemfile.lock
 pkg
 html
 results.html
+.githooks
+.DS_Store
