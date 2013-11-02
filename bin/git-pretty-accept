@@ -5,5 +5,3 @@ require 'methadone'
 require 'git_pretty_accept'
 
 GitPrettyAccept::App.go!
-
-
