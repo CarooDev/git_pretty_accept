@@ -1,4 +1,5 @@
 .DS_Store
-results.html
+Gemfile.lock
 pkg
 html
+results.html
