@@ -3,10 +3,18 @@ module GitPrettyAccept
     include Methadone::Main
     include Methadone::CLILogging
 
-    main do # Add args you want: |like,so|
-      # your program code here
-      # You can access CLI options via
-      # the options Hash
+    main do |branch|
+      merge_message = 'Merge add_changelog branch'
+      our = Git.open('.')
+      source_branch = our.branch.to_s
+      our.pull
+      our.branch(branch).checkout
+      `git rebase #{source_branch}`
+      our.branch(source_branch).checkout
+      `git merge --no-ff --message "#{merge_message}" #{branch}`
+      our.push
+      our.branch(branch).delete
+      our.push our.remote('origin'), ":#{branch}"
     end
 
     # supplemental methods here
