@@ -3,32 +3,30 @@ module GitPrettyAccept
     include Methadone::Main
     include Methadone::CLILogging
 
-    main do # Add args you want: |like,so|
-      # your program code here
-      # You can access CLI options via
-      # the options Hash
+    main do |branch|
+      options[:edit] = true if options[:edit].nil?
+
+      our = Git.open('.')
+      source_branch = our.branches.find(&:current).to_s
+      our.pull
+      our.branch(branch).checkout
+      `git rebase #{source_branch}`
+      our.branch(source_branch).checkout
+
+      # Open git message editor in a separate process so that it will open its
+      # own commit message editor.
+      system "git merge --no-ff #{options[:edit] ? '--edit' : '--no-edit'} #{branch}"
+
+      our.push
+      our.branch(branch).delete
+      our.push our.remote('origin'), ":#{branch}"
     end
 
-    # supplemental methods here
+    description "Accept pull requests, the pretty way"
 
-    # Declare command-line interface here
+    on "--[no-]edit", "Edit merge message before committing. (Default: --edit)"
 
-    # description "one line description of your app"
-    #
-    # Accept flags via:
-    # on("--flag VAL","Some flag")
-    # options[flag] will contain VAL
-    #
-    # Specify switches via:
-    # on("--[no-]switch","Some switch")
-    #
-    # Or, just call OptionParser methods on opts
-    #
-    # Require an argument
-    # arg :some_arg
-    #
-    # # Make an argument optional
-    # arg :optional_arg, :optional
+    arg :branch
 
     version GitPrettyAccept::VERSION
 
