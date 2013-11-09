@@ -20,9 +20,11 @@ module GitPrettyAccept
         "git push origin :#{branch}"
       ]
 
-      commands.each do |command|
+      commands.each_with_index do |command, i|
         puts "\n#{command}"
         unless system(command)
+          puts "\nDue to the error above, the following commands were not executed: "
+          puts commands[i + 1, commands.size].join("\n")
           exit!
         end
       end
