@@ -1,0 +1,5 @@
+#!/usr/bin/env ruby
+
+require 'git_pretty_accept'
+
+GitPrettyAccept::App.go!

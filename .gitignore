@@ -1,4 +1,9 @@
-.DS_Store
-results.html
+Gemfile.lock
 pkg
 html
+tmp
+results.html
+.githooks
+.DS_Store
+.rspec
+.rubocop.yml
