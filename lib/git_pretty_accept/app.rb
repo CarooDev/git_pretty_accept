@@ -22,7 +22,9 @@ module GitPrettyAccept
 
       commands.each do |command|
         puts "\n#{command}"
-        system command
+        unless system(command)
+          exit!
+        end
       end
     end
 
