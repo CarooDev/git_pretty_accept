@@ -8,18 +8,22 @@ module GitPrettyAccept
 
       our = Git.open('.')
       source_branch = our.branches.find(&:current).to_s
-      our.pull
-      our.branch(branch).checkout
-      `git rebase #{source_branch}`
-      our.branch(source_branch).checkout
 
-      # Open git message editor in a separate process so that it will open its
-      # own commit message editor.
-      system "git merge --no-ff #{options[:edit] ? '--edit' : '--no-edit'} #{branch}"
+      commands = [
+        "git pull",
+        "git checkout #{branch}",
+        "git rebase #{source_branch}",
+        "git checkout #{source_branch}",
+        "git merge --no-ff #{options[:edit] ? '--edit' : '--no-edit'} #{branch}",
+        "git push",
+        "git branch -d #{branch}",
+        "git push origin :#{branch}"
+      ]
 
-      our.push
-      our.branch(branch).delete
-      our.push our.remote('origin'), ":#{branch}"
+      commands.each do |command|
+        puts "\n#{command}"
+        system command
+      end
     end
 
     description "Accept pull requests, the pretty way"
