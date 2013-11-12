@@ -1,6 +1,17 @@
-# GitPrettyAccept
+# git-pretty-accept
 
-TODO: Write a gem description
+`git-pretty-accept` is a script that rebases a pull request before merging
+to master. Pull requests are _always_ merged recursively. The result is a
+linear history with merge bubbles indicating pull requests. In short, pretty.
+
+For more information, check out
+
+* [A simple git branching model](https://gist.github.com/jbenet/ee6c9ac48068889b0912)
+* [Best Way To Merge A (GitHub) Pull Request](http://differential.io/blog/best-way-to-merge-a-github-pull-request)
+
+`git-pretty-accept` also automatically deletes the local and remote branch
+of the pull request once it's merged to master. I may add an option later on
+to disable this by default.
 
 ## Installation
 
@@ -18,7 +29,7 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+    $ git pretty-accept BRANCH
 
 ## Contributing
 
