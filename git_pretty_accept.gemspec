@@ -8,9 +8,15 @@ Gem::Specification.new do |spec|
   spec.version       = GitPrettyAccept::VERSION
   spec.authors       = ["George Mendoza"]
   spec.email         = ["gsmendoza@gmail.com"]
-  spec.description   = %q{TODO: Write a gem description}
-  spec.summary       = %q{TODO: Write a gem summary}
-  spec.homepage      = ""
+  spec.description   = %q{
+    `git-pretty-accept` is a script that rebases a pull request before
+    merging to master. Pull requests are _always_ merged recursively. The
+    result is a linear history with merge bubbles indicating pull requests.
+    In short, pretty.
+  }.gsub(/\s+/, ' ')
+
+  spec.summary       = %q{Accept pull requests, the pretty way}
+  spec.homepage      = "https://github.com/gsmendoza/git_pretty_accept"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
@@ -18,11 +24,13 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "bundler", "~> 1.3"
-  spec.add_development_dependency "rake"
-  spec.add_development_dependency('rdoc')
-  spec.add_development_dependency('aruba')
-  spec.add_development_dependency('rake', '~> 0.9.2')
+  spec.add_dependency 'git'
   spec.add_dependency('methadone', '~> 1.3.1')
+
+  spec.add_development_dependency "bundler", "~> 1.3"
+  spec.add_development_dependency('rdoc')
+  spec.add_development_dependency('debugger')
+  spec.add_development_dependency('rake', '~> 0.9.2')
   spec.add_development_dependency('rspec')
+  spec.add_development_dependency('rspec-example_steps')
 end
