@@ -16,7 +16,7 @@ module GitPrettyAccept
         "git checkout #{source_branch}",
         "git merge --no-ff #{options[:edit] ? '--edit' : '--no-edit'} #{branch}",
         "git push",
-        "git branch -d #{branch}",
+        "git branch -D #{branch}",
         "git push origin :#{branch}"
       ]
 
