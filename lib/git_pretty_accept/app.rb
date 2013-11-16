@@ -13,6 +13,7 @@ module GitPrettyAccept
         "git pull",
         "git checkout #{branch}",
         "git rebase #{source_branch}",
+        "git push -f",
         "git checkout #{source_branch}",
         "git merge --no-ff #{options[:edit] ? '--edit' : '--no-edit'} #{branch}",
         "git push",
