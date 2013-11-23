@@ -56,7 +56,7 @@ describe GitPrettyAccept::App do
 
     When 'I run `git pretty-accept PR_BRANCH`' do
       FileUtils.cd(our_path) do
-        `#{project_path}/bin/git-pretty-accept --no-edit #{pr_branch}`
+        `bundle exec #{project_path}/bin/git-pretty-accept --no-edit #{pr_branch}`
         expect($CHILD_STATUS.exitstatus).to eq(0)
       end
     end
@@ -67,10 +67,10 @@ describe GitPrettyAccept::App do
       expect(our.log[0].message).to eq("Merge branch 'pr_branch'")
       expect(our.log[0].parents.size).to eq(2)
 
-      expect(our.log[1].message).to eq('Add changelog')
+      expect(our.log[1].message).to eq('Update readme')
       expect(our.log[1].parents.size).to eq(1)
 
-      expect(our.log[2].message).to eq('Update readme')
+      expect(our.log[2].message).to eq('Add changelog')
       expect(our.log[2].parents.size).to eq(1)
 
       expect(our.log[3].message).to eq('Add readme')
@@ -88,6 +88,25 @@ describe GitPrettyAccept::App do
 
     And 'it should delete the remote PR_BRANCH' do
       expect(our.branches["origin/#{pr_branch}"]).to be_nil
+    end
+  end
+
+  Steps "should not allow master to be accepted as a PR branch" do
+    Given 'I have a local repo' do
+      Git.init(our_path)
+    end
+
+    When 'I run `git pretty-accept master`' do
+      command = "bundle exec #{project_path}/bin/git-pretty-accept --no-edit master"
+      FileUtils.cd(our_path) do
+        @result = system(command, err: '/tmp/err.log')
+      end
+    end
+
+    Then 'I should be informed that master cannot be accepted as a PR branch' do
+      expect(@result).to be_false
+      expect(File.read('/tmp/err.log')).to include(
+        'trying to accept master as a pull request branch')
     end
   end
 end
