@@ -56,7 +56,7 @@ describe GitPrettyAccept::App do
 
     When 'I run `git pretty-accept PR_BRANCH`' do
       FileUtils.cd(our_path) do
-        `#{project_path}/bin/git-pretty-accept --no-edit #{pr_branch}`
+        `bundle exec #{project_path}/bin/git-pretty-accept --no-edit #{pr_branch}`
         expect($CHILD_STATUS.exitstatus).to eq(0)
       end
     end
