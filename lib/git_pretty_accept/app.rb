@@ -10,13 +10,13 @@ module GitPrettyAccept
       source_branch = our.branches.find(&:current).to_s
 
       commands = [
-        "git pull",
+        "git pull origin #{source_branch}",
         "git checkout #{branch}",
-        "git rebase #{source_branch}",
-        "git push -f",
+        "git rebase origin/#{source_branch}",
+        "git push --force origin #{branch}",
         "git checkout #{source_branch}",
         "git merge --no-ff #{options[:edit] ? '--edit' : '--no-edit'} #{branch}",
-        "git push",
+        "git push origin #{source_branch}",
         "git branch -D #{branch}",
         "git push origin :#{branch}"
       ]
