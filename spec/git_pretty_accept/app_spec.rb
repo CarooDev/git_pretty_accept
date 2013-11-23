@@ -90,4 +90,23 @@ describe GitPrettyAccept::App do
       expect(our.branches["origin/#{pr_branch}"]).to be_nil
     end
   end
+
+  Steps "should not allow master to be accepted as a PR branch" do
+    Given 'I have a local repo' do
+      Git.init(our_path)
+    end
+
+    When 'I run `git pretty-accept master`' do
+      command = "bundle exec #{project_path}/bin/git-pretty-accept --no-edit master"
+      FileUtils.cd(our_path) do
+        @result = system(command, err: '/tmp/err.log')
+      end
+    end
+
+    Then 'I should be informed that master cannot be accepted as a PR branch' do
+      expect(@result).to be_false
+      expect(File.read('/tmp/err.log')).to include(
+        'trying to accept master as a pull request branch')
+    end
+  end
 end
