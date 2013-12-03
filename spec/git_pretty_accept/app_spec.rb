@@ -112,7 +112,7 @@ describe GitPrettyAccept::App do
   end
 
   Steps "should use the .git-pretty-accept-template.txt if available" do
-    merge_message = 'hello world!'
+    merge_message = "hello\nworld!"
     repo = TestRepo.new(project_path, tmp_path)
 
     Given 'I have a local repo tracking a remote repo' do
