@@ -11,32 +11,7 @@ module GitPrettyAccept
         exit!
       else
         options[:edit] = true if options[:edit].nil?
-
-        our = Git.open('.')
-        source_branch = our.branches.find(&:current).to_s
-
-        commands = [
-          "git fetch origin",
-          "git rebase origin/#{source_branch}",
-          "git checkout #{branch}",
-          "git rebase origin/#{source_branch}",
-          "git push --force origin #{branch}",
-          "git checkout #{source_branch}",
-          "git merge --no-ff #{options[:edit] ? '--edit' : '--no-edit'} #{branch}",
-          "git push origin #{source_branch}",
-          "git branch -d #{branch}",
-          "git push origin :#{branch}"
-        ]
-
-        commands.each_with_index do |command, i|
-          info "\n#{command}"
-          unless system(command)
-            error "\nDue to the error above, " +
-              "the following commands were not executed: " +
-              commands[i + 1, commands.size].join("\n")
-            exit!
-          end
-        end
+        Transaction.new(branch, options[:edit]).call
       end
     end
 

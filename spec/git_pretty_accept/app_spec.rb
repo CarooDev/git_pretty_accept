@@ -110,4 +110,34 @@ describe GitPrettyAccept::App do
         'trying to accept master as a pull request branch')
     end
   end
+
+  Steps "should use the .git-pretty-accept-template.txt if available" do
+    merge_message = 'hello world!'
+    repo = TestRepo.new(project_path, tmp_path)
+
+    Given 'I have a local repo tracking a remote repo' do
+      repo.build
+    end
+
+    And 'the local repo has a .git-pretty-accept-template.txt' do
+      repo.our.add_merge_message_template_file merge_message
+    end
+
+    And 'I have a PR branch' do
+      repo.our.add_branch pr_branch
+    end
+
+    And 'the current branch is master' do
+      repo.our.branch('master').checkout
+    end
+
+    When 'I run `git pretty-accept PR_BRANCH`' do
+      repo.git_pretty_accept pr_branch
+    end
+
+    Then 'I should see that the .git-pretty-accept-template.txt is the content of
+      the merge message' do
+      expect(repo.our.log[0].message).to eq(merge_message)
+    end
+  end
 end
