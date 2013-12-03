@@ -1,3 +1,9 @@
+## 0.2.0 - 2013-12-03
+
+* Fix: do not force-delete local PR branch.
+* Fix: fetch origin and rebase master instead of git pull.
+* Feature: be able to set merge message template.
+
 ## 0.1.3 - 2013-11-23
 
 * Specify branches when pulling and pushing to origin.
