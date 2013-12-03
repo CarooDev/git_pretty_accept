@@ -1,6 +1,7 @@
 module GitPrettyAccept
   class MergeCommand
     MESSAGE_TEMPLATE_FILENAME = '.git-pretty-accept-template.txt'
+
     attr_reader :branch, :let_user_edit_message
 
     def initialize(branch, let_user_edit_message)
@@ -14,13 +15,18 @@ module GitPrettyAccept
       end
     end
 
+    # http://www.seejohncode.com/2012/10/16/proper-escaping-of-single-quotes/
+    def merge_message_with_escaped_single_quote
+      merge_message.gsub("'") { %q{'\''} }
+    end
+
     def to_s
       [
         "git merge",
         "--no-ff",
         let_user_edit_message ? '--edit' : '--no-edit',
         branch,
-        merge_message && "--message '#{merge_message}'"
+        merge_message && "--message '#{merge_message_with_escaped_single_quote}'"
       ].join(' ')
     end
   end
