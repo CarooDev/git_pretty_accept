@@ -67,10 +67,11 @@ describe GitPrettyAccept::App do
       expect(our.log[0].message).to eq("Merge branch 'pr_branch'")
       expect(our.log[0].parents.size).to eq(2)
 
-      expect(our.log[1].message).to eq('Update readme')
-      expect(our.log[1].parents.size).to eq(1)
+      # For some reason, the order of the logs 1 and 2 is indeterminate.
+      expect(our.log[1 .. 2].map(&:message).sort)
+        .to eq(['Add changelog', 'Update readme'])
 
-      expect(our.log[2].message).to eq('Add changelog')
+      expect(our.log[1].parents.size).to eq(1)
       expect(our.log[2].parents.size).to eq(1)
 
       expect(our.log[3].message).to eq('Add readme')
@@ -107,6 +108,66 @@ describe GitPrettyAccept::App do
       expect(@result).to be_false
       expect(File.read('/tmp/err.log')).to include(
         'trying to accept master as a pull request branch')
+    end
+  end
+
+  Steps "should use the .git-pretty-accept-template.txt if available" do
+    merge_message = "hello\nworld!"
+    repo = TestRepo.new(project_path, tmp_path)
+
+    Given 'I have a local repo tracking a remote repo' do
+      repo.build
+    end
+
+    And 'the local repo has a .git-pretty-accept-template.txt' do
+      repo.our.add_merge_message_template_file merge_message
+    end
+
+    And 'I have a PR branch' do
+      repo.our.add_branch pr_branch
+    end
+
+    And 'the current branch is master' do
+      repo.our.branch('master').checkout
+    end
+
+    When 'I run `git pretty-accept PR_BRANCH`' do
+      repo.git_pretty_accept pr_branch
+    end
+
+    Then 'I should see that the .git-pretty-accept-template.txt is the content of
+      the merge message' do
+      expect(repo.our.log[0].message).to eq(merge_message)
+    end
+  end
+
+  Steps "should be able to use a .git-pretty-accept-template.txt with an apostrophe" do
+    merge_message = "hello apostrophe (')"
+    repo = TestRepo.new(project_path, tmp_path)
+
+    Given 'I have a local repo tracking a remote repo' do
+      repo.build
+    end
+
+    And 'the local repo has a .git-pretty-accept-template.txt' do
+      repo.our.add_merge_message_template_file merge_message
+    end
+
+    And 'I have a PR branch' do
+      repo.our.add_branch pr_branch
+    end
+
+    And 'the current branch is master' do
+      repo.our.branch('master').checkout
+    end
+
+    When 'I run `git pretty-accept PR_BRANCH`' do
+      repo.git_pretty_accept pr_branch
+    end
+
+    Then 'I should see that the .git-pretty-accept-template.txt is the content of
+      the merge message' do
+      expect(repo.our.log[0].message).to eq(merge_message)
     end
   end
 end
