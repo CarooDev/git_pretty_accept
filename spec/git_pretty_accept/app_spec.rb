@@ -67,10 +67,11 @@ describe GitPrettyAccept::App do
       expect(our.log[0].message).to eq("Merge branch 'pr_branch'")
       expect(our.log[0].parents.size).to eq(2)
 
-      expect(our.log[1].message).to eq('Update readme')
-      expect(our.log[1].parents.size).to eq(1)
+      # For some reason, the order of the logs 1 and 2 is indeterminate.
+      expect(our.log[1 .. 2].map(&:message).sort)
+        .to eq(['Add changelog', 'Update readme'])
 
-      expect(our.log[2].message).to eq('Add changelog')
+      expect(our.log[1].parents.size).to eq(1)
       expect(our.log[2].parents.size).to eq(1)
 
       expect(our.log[3].message).to eq('Add readme')
