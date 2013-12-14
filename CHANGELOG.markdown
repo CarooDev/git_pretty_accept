@@ -1,3 +1,8 @@
+## 0.3.0 - 2013-12-14
+
+* Rebase local PR branch from remote.
+* Revamp test repo object helpers.
+
 ## 0.2.0 - 2013-12-03
 
 * Fix: do not force-delete local PR branch.
