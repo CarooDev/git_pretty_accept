@@ -12,89 +12,76 @@ describe GitPrettyAccept::App do
 
   let(:pr_branch) { 'pr_branch' }
 
+  let(:remote_repo) { RemoteRepo.new(project_path, remote_path) }
+  let(:local_repo) do
+    LocalRepo.new(project_path, our_path, remote_repo).tap do |result|
+      result.add_initial_commit
+    end
+  end
+
+  let(:other_repo) { LocalRepo.new(project_path, their_path, remote_repo) }
+
   before do
     FileUtils.rm_rf tmp_path
   end
 
   Steps "I can accept a pull request... prettily" do
-    our = nil
+    their_change_in_master = 'their_change_in_master'
+    our_change_in_pr_branch = 'our_change_in_pr_branch'
 
     Given 'I have a local repo tracking a remote repo' do
-      Git.init remote_path, bare: true
-
-      # Add initial commit. Otherwise, `our.branch(pr_branch)`
-      # below won't be able to create a new branch.
-
-      Git.clone remote_path, our_path
-      our = Git.open(our_path)
-
-      File.open("#{our_path}/readme.txt", 'w') { |f| f.write('readme') }
-      our.add all: true
-      our.commit 'Add readme'
-      our.push
+      local_repo
     end
 
     And 'I have a PR_BRANCH that is not up-to-date with master' do
-      Git.clone remote_path, their_path
-      their = Git.open(their_path)
+      other_repo.checkout 'master'
+      other_repo.push_some_change their_change_in_master
 
-      File.open("#{their_path}/readme.txt", 'w') { |f| f.write('updated readme') }
-      their.add all: true
-      their.commit 'Update readme'
-      their.push
-
-      our.branch(pr_branch).checkout
-      File.open("#{our_path}/changelog.txt", 'w') { |f| f.write('changelog') }
-      our.add all: true
-      our.commit 'Add changelog'
-      our.push our.remote('origin'), pr_branch
+      local_repo.checkout pr_branch
+      local_repo.push_some_change our_change_in_pr_branch
     end
 
     And 'the current branch is master' do
-      our.branch('master').checkout
+      local_repo.checkout 'master'
     end
 
     When 'I run `git pretty-accept PR_BRANCH`' do
-      FileUtils.cd(our_path) do
-        `bundle exec #{project_path}/bin/git-pretty-accept --no-edit #{pr_branch}`
-        expect($CHILD_STATUS.exitstatus).to eq(0)
-      end
+      local_repo.git_pretty_accept pr_branch
     end
 
     Then 'it should rebase the PR_BRANCH before merging to master' do
-      expect(our.log.size).to eq(4)
+      expect(local_repo.git.log.size).to eq(4)
 
-      expect(our.log[0].message).to eq("Merge branch 'pr_branch'")
-      expect(our.log[0].parents.size).to eq(2)
+      expect(local_repo.git.log[0].message).to eq("Merge branch '#{pr_branch}'")
+      expect(local_repo.git.log[0].parents.size).to eq(2)
 
       # For some reason, the order of the logs 1 and 2 is indeterminate.
-      expect(our.log[1 .. 2].map(&:message).sort)
-        .to eq(['Add changelog', 'Update readme'])
+      expect(local_repo.git.log[1 .. 2].map(&:message).sort)
+        .to eq([our_change_in_pr_branch, their_change_in_master])
 
-      expect(our.log[1].parents.size).to eq(1)
-      expect(our.log[2].parents.size).to eq(1)
+      expect(local_repo.git.log[1].parents.size).to eq(1)
+      expect(local_repo.git.log[2].parents.size).to eq(1)
 
-      expect(our.log[3].message).to eq('Add readme')
-      expect(our.log[3].parents.size).to eq(0)
+      expect(local_repo.git.log[3].parents.size).to eq(0)
     end
 
     And 'it should push the PR_BRANCH commits' do
-      expect(our.branches['origin/master'].gcommit.message)
-        .to eq("Merge branch 'pr_branch'")
+      expect(local_repo.git.branches['origin/master'].gcommit.message)
+        .to eq("Merge branch '#{pr_branch}'")
     end
 
     And 'it should delete the local PR_BRANCH' do
-      expect(our.branches[pr_branch]).to be_nil
+      expect(local_repo.git.branches[pr_branch]).to be_nil
     end
 
     And 'it should delete the remote PR_BRANCH' do
-      expect(our.branches["origin/#{pr_branch}"]).to be_nil
+      expect(local_repo.git.branches["origin/#{pr_branch}"]).to be_nil
     end
   end
 
   Steps "should not allow master to be accepted as a PR branch" do
     Given 'I have a local repo' do
-      Git.init(our_path)
+      local_repo
     end
 
     When 'I run `git pretty-accept master`' do
@@ -113,61 +100,104 @@ describe GitPrettyAccept::App do
 
   Steps "should use the .git-pretty-accept-template.txt if available" do
     merge_message = "hello\nworld!"
-    repo = TestRepo.new(project_path, tmp_path)
 
     Given 'I have a local repo tracking a remote repo' do
-      repo.build
+      local_repo
     end
 
     And 'the local repo has a .git-pretty-accept-template.txt' do
-      repo.our.add_merge_message_template_file merge_message
+      local_repo.add_merge_message_template_file merge_message
     end
 
     And 'I have a PR branch' do
-      repo.our.add_branch pr_branch
+      local_repo.create_branch pr_branch
+      local_repo.commit_some_change 'some-change'
     end
 
     And 'the current branch is master' do
-      repo.our.branch('master').checkout
+      local_repo.checkout 'master'
     end
 
     When 'I run `git pretty-accept PR_BRANCH`' do
-      repo.git_pretty_accept pr_branch
+      local_repo.git_pretty_accept pr_branch
     end
 
     Then 'I should see that the .git-pretty-accept-template.txt is the content of
       the merge message' do
-      expect(repo.our.log[0].message).to eq(merge_message)
+      expect(local_repo.git.log[0].message).to eq(merge_message)
     end
   end
 
   Steps "should be able to use a .git-pretty-accept-template.txt with an apostrophe" do
     merge_message = "hello apostrophe (')"
-    repo = TestRepo.new(project_path, tmp_path)
 
     Given 'I have a local repo tracking a remote repo' do
-      repo.build
+      local_repo
     end
 
     And 'the local repo has a .git-pretty-accept-template.txt' do
-      repo.our.add_merge_message_template_file merge_message
+      local_repo.add_merge_message_template_file merge_message
     end
 
     And 'I have a PR branch' do
-      repo.our.add_branch pr_branch
+      local_repo.create_branch pr_branch
+      local_repo.commit_some_change 'some-change'
     end
 
     And 'the current branch is master' do
-      repo.our.branch('master').checkout
+      local_repo.checkout 'master'
     end
 
     When 'I run `git pretty-accept PR_BRANCH`' do
-      repo.git_pretty_accept pr_branch
+      local_repo.git_pretty_accept pr_branch
     end
 
     Then 'I should see that the .git-pretty-accept-template.txt is the content of
       the merge message' do
-      expect(repo.our.log[0].message).to eq(merge_message)
+      expect(local_repo.git.log[0].message).to eq(merge_message)
+    end
+  end
+
+  Steps 'should rebase the branch from its remote branch' do
+    local_pr_message = 'local-pr-branch-change.txt'
+    remote_pr_message = 'remote-pr-branch-change.txt'
+
+    Given 'I have a local repo tracking a remote repo' do
+      local_repo
+    end
+
+    And 'I have a PR branch tracking a remote PR branch' do
+      other_repo.create_branch pr_branch
+      local_repo.track pr_branch
+    end
+
+    And 'both local and remote PR branch have been updated' do
+      local_repo.commit_some_change local_pr_message
+
+      other_repo.checkout pr_branch
+      other_repo.push_some_change remote_pr_message
+    end
+
+    And 'the current branch is master' do
+      local_repo.checkout 'master'
+    end
+
+    When 'I run `git pretty-accept PR_BRANCH`' do
+      local_repo.git_pretty_accept pr_branch
+    end
+
+    Then 'I should see the commit in the remote PR branch incorporated to master' do
+      expect(local_repo.git.log.size).to eq(4)
+
+      expect(local_repo.git.log[0].message).to eq("Merge branch '#{pr_branch}'")
+      expect(local_repo.git.log[0].parents.size).to eq(2)
+
+      expect(local_repo.git.log[1].message).to eq(local_pr_message)
+      expect(local_repo.git.log[1].parents.size).to eq(1)
+
+      # For some reason, the order of the logs 2 and 3 is indeterminate.
+      expect(local_repo.git.log[2 .. 3].map(&:message).sort)
+        .to include(remote_pr_message)
     end
   end
 end

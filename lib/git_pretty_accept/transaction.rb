@@ -14,6 +14,7 @@ module GitPrettyAccept
         "git fetch origin",
         "git rebase origin/#{source_branch}",
         "git checkout #{branch}",
+        "git rebase origin/#{branch}",
         "git rebase origin/#{source_branch}",
         "git push --force origin #{branch}",
         "git checkout #{source_branch}",
