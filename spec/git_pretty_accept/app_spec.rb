@@ -170,4 +170,55 @@ describe GitPrettyAccept::App do
       expect(repo.our.log[0].message).to eq(merge_message)
     end
   end
+
+  Steps 'should rebase the branch from its remote branch' do
+    local_pr_message = 'local-pr-branch-change.txt'
+    remote_pr_message = 'remote-pr-branch-change.txt'
+
+    remote_repo = nil
+    local_repo = nil
+    other_repo = nil
+
+    Given 'I have a local repo tracking a remote repo' do
+      remote_repo = RemoteRepo.new(project_path, remote_path)
+      local_repo = LocalRepo.new(project_path, our_path, remote_repo)
+      local_repo.add_initial_commit
+    end
+
+    And 'I have a PR branch tracking a remote PR branch' do
+      other_repo = LocalRepo.new(project_path, their_path, remote_repo)
+      other_repo.create_branch pr_branch
+      local_repo.track pr_branch
+    end
+
+    And 'both local and remote PR branch have been updated' do
+      local_repo.commit_some_change local_pr_message
+
+      other_repo.checkout pr_branch
+      other_repo.push_some_change remote_pr_message
+    end
+
+    And 'the current branch is master' do
+      local_repo.checkout 'master'
+    end
+
+    When 'I run `git pretty-accept PR_BRANCH`' do
+      local_repo.git_pretty_accept pr_branch
+    end
+
+    Then 'I should see the commit in the remote PR branch incorporated to master' do
+      expect(local_repo.git.log.size).to eq(4)
+
+      expect(local_repo.git.log[0].message).to eq("Merge branch '#{pr_branch}'")
+      expect(local_repo.git.log[0].parents.size).to eq(2)
+
+      expect(local_repo.git.log[1].message).to eq(local_pr_message)
+      expect(local_repo.git.log[1].parents.size).to eq(1)
+
+      expect(local_repo.git.log[2].message).to eq(remote_pr_message)
+      expect(local_repo.git.log[2].parents.size).to eq(1)
+
+      expect(local_repo.git.log[3].parents.size).to eq(0)
+    end
+  end
 end

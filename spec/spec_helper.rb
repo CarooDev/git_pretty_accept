@@ -7,6 +7,9 @@ require 'git_pretty_accept'
 #
 # See http://rubydoc.info/gems/rspec-core/RSpec/Core/Configuration
 
+require 'support/local_repo'
+require 'support/remote_repo'
+
 require 'support/test_repo'
 require 'support/test_repo/local_repo'
 
