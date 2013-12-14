@@ -21,6 +21,12 @@ class LocalRepo
     git.push
   end
 
+  def add_merge_message_template_file(message)
+    File.open("#{path}/.git-pretty-accept-template.txt", 'w') do |file|
+      file.write message
+    end
+  end
+
   def checkout(branch)
     git.branch(branch).checkout
   end
