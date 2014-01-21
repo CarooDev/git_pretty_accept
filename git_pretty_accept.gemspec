@@ -6,8 +6,8 @@ require 'git_pretty_accept/version'
 Gem::Specification.new do |spec|
   spec.name          = "git_pretty_accept"
   spec.version       = GitPrettyAccept::VERSION
-  spec.authors       = ["George Mendoza"]
-  spec.email         = ["gsmendoza@gmail.com"]
+  spec.authors       = ["Love With Food, George Mendoza"]
+  spec.email         = ["george@lovewithfood.com"]
   spec.description   = %q{
     `git-pretty-accept` is a script that rebases a pull request before
     merging to master. Pull requests are _always_ merged recursively. The
@@ -16,7 +16,7 @@ Gem::Specification.new do |spec|
   }.gsub(/\s+/, ' ')
 
   spec.summary       = %q{Accept pull requests, the pretty way}
-  spec.homepage      = "https://github.com/gsmendoza/git_pretty_accept"
+  spec.homepage      = "https://github.com/lovewithfood/git_pretty_accept"
   spec.license       = "MIT"
 
   spec.files         = `git ls-files`.split($/)
