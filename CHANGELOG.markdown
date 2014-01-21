@@ -1,3 +1,9 @@
+## 0.3.1 - 2014-01-21
+
+* Transfer ownership to Love With Food.
+* Minor README updates.
+* Add MIT license.
+
 ## 0.3.0 - 2013-12-14
 
 * Rebase local PR branch from remote.
