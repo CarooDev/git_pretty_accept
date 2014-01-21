@@ -29,7 +29,28 @@ Or install it yourself as:
 
 ## Usage
 
-    $ git pretty-accept BRANCH
+To accept a pull request, just run `git pretty-accept BRANCH_NAME` in
+the branch where `BRANCH_NAME` will be merged.
+
+## Merge commit template
+
+You can also provide a merge commit template
+`.git-pretty-accept-template.txt` to your project directory. This is
+great if you want your merge commits to follow a certain format e.g.
+you want your team to enter the issue link when accepting pull requests.
+
+## Caveats
+
+We wrote git_pretty_accept for our particular workflow. If you'd like
+to use the gem, here are a few things you'll need to keep in mind. The
+script
+
+1. Assumes that your remote repository is origin. It doesn't work yet with
+   Github forks.
+1. Automatically removes the local and remote branch of the pull request
+   once the pull request is merged.
+1. Complains if you accidentally try to accept the master branch to a feature
+   branch.
 
 ## Contributing
 
