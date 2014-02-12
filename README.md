@@ -52,6 +52,11 @@ script
 1. Complains if you accidentally try to accept the master branch to a feature
    branch.
 
+## Known to be working on
+
+* git 1.7.9
+* ruby 2.0.0
+
 ## Contributing
 
 1. Fork it
