@@ -13,6 +13,8 @@ module GitPrettyAccept
       [
         "git fetch origin",
         "git rebase origin/#{source_branch}",
+        "echo 'Confirming that #{source_branch} is not ahead of origin/#{source_branch}...'",
+        "test `git rev-parse HEAD` = `git rev-parse origin/#{source_branch}`",
         "git checkout #{branch}",
         "git rebase origin/#{branch}",
         "git rebase origin/#{source_branch}",

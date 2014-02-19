@@ -1,3 +1,5 @@
+* Prevent merging when the target branch is different from origin.
+
 ## 0.3.1 - 2014-01-21
 
 * Transfer ownership to Love With Food.
