@@ -65,6 +65,19 @@ describe GitPrettyAccept::App do
       expect(local_repo.git.log[3].parents.size).to eq(0)
     end
 
+    And 'the PR_BRANCH should be on top of the previous origin/master' do
+      commit_of_our_change_in_pr_branch = local_repo.git.log.find do |log|
+        log.message == our_change_in_pr_branch
+      end
+
+      commit_of_their_change_in_master = local_repo.git.log.find do |log|
+        log.message == their_change_in_master
+      end
+
+      expect(commit_of_our_change_in_pr_branch.parent.message)
+        .to eq(commit_of_their_change_in_master.message)
+    end
+
     And 'it should push the PR_BRANCH commits' do
       expect(local_repo.git.branches['origin/master'].gcommit.message)
         .to eq("Merge branch '#{pr_branch}'")
