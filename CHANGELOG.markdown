@@ -1,4 +1,8 @@
-* Prevent merging when the target branch is different from origin.
+## 0.4.0 - 2014-02-20
+
+* Prevent merging when the target branch is different from origin. Prevents
+  commits in master from being accidentally pushed to origin along with the
+  pull request.
 
 ## 0.3.1 - 2014-01-21
 
