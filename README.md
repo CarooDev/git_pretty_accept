@@ -1,5 +1,7 @@
 # git-pretty-accept
 
+[![Build Status](https://travis-ci.org/lovewithfood/git_pretty_accept.png)](https://travis-ci.org/lovewithfood/git_pretty_accept)
+
 `git-pretty-accept` is a script that rebases a pull request before merging
 to master. Pull requests are _always_ merged recursively. The result is a
 linear history with merge bubbles indicating pull requests. In short, pretty.
