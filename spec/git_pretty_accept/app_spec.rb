@@ -65,6 +65,19 @@ describe GitPrettyAccept::App do
       expect(local_repo.git.log[3].parents.size).to eq(0)
     end
 
+    And 'the PR_BRANCH should be on top of the previous origin/master' do
+      commit_of_our_change_in_pr_branch = local_repo.git.log.find do |log|
+        log.message == our_change_in_pr_branch
+      end
+
+      commit_of_their_change_in_master = local_repo.git.log.find do |log|
+        log.message == their_change_in_master
+      end
+
+      expect(commit_of_our_change_in_pr_branch.parent.message)
+        .to eq(commit_of_their_change_in_master.message)
+    end
+
     And 'it should push the PR_BRANCH commits' do
       expect(local_repo.git.branches['origin/master'].gcommit.message)
         .to eq("Merge branch '#{pr_branch}'")
@@ -198,6 +211,43 @@ describe GitPrettyAccept::App do
       # For some reason, the order of the logs 2 and 3 is indeterminate.
       expect(local_repo.git.log[2 .. 3].map(&:message).sort)
         .to include(remote_pr_message)
+    end
+  end
+
+  Steps "should not merge into source branch when it is different from origin" do
+    our_change_in_master = 'our_change_in_master'
+    our_change_in_pr_branch = 'our_change_in_pr_branch'
+
+    Given 'I have a local repo' do
+      local_repo
+    end
+
+    And 'my local source branch is ahead of origin' do
+      local_repo.checkout 'master'
+      local_repo.commit_some_change our_change_in_master
+    end
+
+    And 'I have a PR_BRANCH that is not up-to-date with master' do
+      local_repo.checkout pr_branch
+      local_repo.push_some_change our_change_in_pr_branch
+    end
+
+    And 'the current branch is master' do
+      local_repo.checkout 'master'
+    end
+
+    When 'I run `git pretty-accept PR_BRANCH`' do
+      command =
+        "bundle exec #{project_path}/bin/git-pretty-accept --no-edit #{pr_branch}"
+
+      FileUtils.cd(our_path) do
+        @result = system(command, err: '/tmp/err.log')
+      end
+    end
+
+    Then 'it should not merge the PR_BRANCH due to the commit in the local source branch' do
+      expect(@result).to be_false
+      expect(File.read('/tmp/err.log')).to include('git push origin master')
     end
   end
 end
