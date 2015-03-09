@@ -44,7 +44,7 @@ class LocalRepo
 
   def git_pretty_accept(branch)
     FileUtils.cd(path) do
-      puts `bundle exec #{project_path}/bin/git-pretty-accept --no-edit #{branch}`
+      puts `bundle exec #{project_path}/bin/git-pretty-accept --no-edit --no-autosquash #{branch}`
     end
   end
 

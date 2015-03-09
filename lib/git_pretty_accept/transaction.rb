@@ -2,11 +2,12 @@ module GitPrettyAccept
   class Transaction
     include Methadone::CLILogging
 
-    attr_reader :branch, :let_user_edit_message
+    attr_reader :branch, :let_user_edit_message, :enable_autosquash
 
-    def initialize(branch, let_user_edit_message = true)
+    def initialize(branch, options = {})
       @branch = branch
-      @let_user_edit_message = let_user_edit_message
+      @let_user_edit_message = options[:edit]
+      @enable_autosquash = options[:autosquash]
     end
 
     def commands
@@ -17,7 +18,7 @@ module GitPrettyAccept
         "test `git rev-parse HEAD` = `git rev-parse origin/#{source_branch}`",
         "git checkout #{branch}",
         "git rebase origin/#{branch}",
-        "git rebase origin/#{source_branch}",
+        "git rebase origin/#{source_branch} #{autosquash_params}",
         "git push --force origin #{branch}",
         "git checkout #{source_branch}",
         MergeCommand.new(branch, let_user_edit_message).to_s,
@@ -43,6 +44,12 @@ module GitPrettyAccept
       return @source_branch if @source_branch
       our = Git.open('.')
       @source_branch = our.branches.find(&:current).to_s
+    end
+
+    private
+
+    def autosquash_params
+      enable_autosquash ? '-i --autosquash' : ''
     end
   end
 end
