@@ -1,3 +1,7 @@
+## Master (unreleased)
+
+* Enable autosquash mode when rebasing by default.
+
 ## 0.4.0 - 2014-02-20
 
 * Prevent merging when the target branch is different from origin. Prevents

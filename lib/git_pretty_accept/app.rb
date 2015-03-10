@@ -11,13 +11,16 @@ module GitPrettyAccept
         exit!
       else
         options[:edit] = true if options[:edit].nil?
-        Transaction.new(branch, options[:edit]).call
+        options[:autosquash] = true if options[:autosquash].nil?
+
+        Transaction.new(branch, options).call
       end
     end
 
     description "Accept pull requests, the pretty way"
 
     on "--[no-]edit", "Edit merge message before committing. (Default: --edit)"
+    on "--[no-]autosquash", "Toggle autosquash when rebasing. (Default: --autosquash)"
 
     arg :branch
 

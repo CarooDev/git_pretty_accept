@@ -98,7 +98,7 @@ describe GitPrettyAccept::App do
     end
 
     When 'I run `git pretty-accept master`' do
-      command = "bundle exec #{project_path}/bin/git-pretty-accept --no-edit master"
+      command = "bundle exec #{project_path}/bin/git-pretty-accept --no-edit --no-autosquash master"
       FileUtils.cd(our_path) do
         @result = system(command, err: '/tmp/err.log')
       end
@@ -238,7 +238,7 @@ describe GitPrettyAccept::App do
 
     When 'I run `git pretty-accept PR_BRANCH`' do
       command =
-        "bundle exec #{project_path}/bin/git-pretty-accept --no-edit #{pr_branch}"
+        "bundle exec #{project_path}/bin/git-pretty-accept --no-edit --no-autosquash #{pr_branch}"
 
       FileUtils.cd(our_path) do
         @result = system(command, err: '/tmp/err.log')

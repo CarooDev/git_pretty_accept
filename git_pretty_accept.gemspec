@@ -33,6 +33,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'pry'
   spec.add_development_dependency 'rdoc'
   spec.add_development_dependency 'rake'
-  spec.add_development_dependency 'rspec'
-  spec.add_development_dependency 'rspec-example_steps'
+  spec.add_development_dependency 'rspec', '~> 2.14.0'
+  spec.add_development_dependency 'rspec-example_steps', '~> 0.2.5'
 end
