@@ -12,8 +12,7 @@ For more information, check out
 * [Best Way To Merge A (GitHub) Pull Request](http://differential.io/blog/best-way-to-merge-a-github-pull-request)
 
 `git-pretty-accept` also automatically deletes the local and remote branch
-of the pull request once it's merged to master. I may add an option later on
-to disable this by default.
+of the pull request once it's merged to master.
 
 ## Installation
 
@@ -53,10 +52,12 @@ script
    once the pull request is merged.
 1. Complains if you accidentally try to accept the master branch to a feature
    branch.
+1. Rebases the local branch in interactive mode so that it can run
+  autosquash(See `--autosquash` under http://git-scm.com/docs/git-rebase#_options).
 
 ## Known to be working on
 
-* git 1.7.9
+* git 2.3.3
 * ruby 2.0.0
 
 ## Contributing
