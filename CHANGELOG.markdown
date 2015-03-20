@@ -1,5 +1,7 @@
 ## Master (unreleased)
 
+## 0.5.0 - 2015-03-20
+
 * Enable autosquash mode when rebasing by default.
 
 ## 0.4.0 - 2014-02-20
