@@ -35,4 +35,9 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency 'rake'
   spec.add_development_dependency 'rspec', '~> 2.14.0'
   spec.add_development_dependency 'rspec-example_steps', '~> 0.2.5'
+
+  # Must set version in order to run 'bundle update'.
+  # Can be removed once upgraded to ruby >= 2.2.5
+  # https://github.com/e2/ruby_dep
+  spec.add_development_dependency 'ruby_dep', '~> 1.3.1'
 end
