@@ -55,11 +55,6 @@ script
 1. Rebases the local branch in interactive mode so that it can run
   autosquash(See `--autosquash` under http://git-scm.com/docs/git-rebase#_options).
 
-## Known to be working on
-
-* git 2.3.3
-* ruby 2.0.0
-
 ## Contributing
 
 1. Fork it
