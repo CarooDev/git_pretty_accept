@@ -185,9 +185,16 @@ describe GitPrettyAccept::App do
     end
 
     And 'both local and remote PR branch have been updated' do
+      # Delay commit of local_pr_message by 1 full second. Git gem
+      # seems to be confused when commits are too close to each other.
+      sleep 1
       local_repo.commit_some_change local_pr_message
 
       other_repo.checkout pr_branch
+
+      # Delay commit of remote_pr_message by 1 full second. Git gem
+      # seems to be confused when commits are too close to each other.
+      sleep 1
       other_repo.push_some_change remote_pr_message
     end
 
@@ -208,9 +215,7 @@ describe GitPrettyAccept::App do
       expect(local_repo.git.log[1].message).to eq(local_pr_message)
       expect(local_repo.git.log[1].parents.size).to eq(1)
 
-      # For some reason, the order of the logs 2 and 3 is indeterminate.
-      expect(local_repo.git.log[2 .. 3].map(&:message).sort)
-        .to include(remote_pr_message)
+      expect(local_repo.git.log[2].message).to eq(remote_pr_message)
     end
   end
 
