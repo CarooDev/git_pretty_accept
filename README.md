@@ -9,7 +9,7 @@ linear history with merge bubbles indicating pull requests. In short, pretty.
 For more information, check out
 
 * [A simple git branching model](https://gist.github.com/jbenet/ee6c9ac48068889b0912)
-* [Best Way To Merge A (GitHub) Pull Request](http://differential.io/blog/best-way-to-merge-a-github-pull-request)
+* [Best Way To Merge A (GitHub) Pull Request](https://differential.com/insights/best-way-to-merge-a-github-pull-request/)
 
 `git-pretty-accept` also automatically deletes the local and remote branch
 of the pull request once it's merged to master.
